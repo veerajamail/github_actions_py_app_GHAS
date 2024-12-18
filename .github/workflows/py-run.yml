@@ -55,7 +55,7 @@ jobs:
         shell: pwsh
 
   execute-common-workflow:
-    uses: ./.github/workflows/common-python-workflow.yml
+    uses: capgemini-ga-demo/github_centralized_workflows/.github/workflows/common-python-workflow.yml@develop
     with:
       Python_File: ${{ inputs.Python_File }}
       Arguments: ${{ needs.construct-arguments.outputs.arguments }}
