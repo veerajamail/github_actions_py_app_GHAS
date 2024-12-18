@@ -1,0 +1,60 @@
+name: Execute-Python
+
+on:
+  workflow_dispatch:
+    inputs:
+      Python_File:
+        description: 'Python file to execute'
+        required: true
+        default: 'py_sample_2.py'
+        type: string
+      Use_Input_Params:
+        description: 'Use predefined inputs as arguments?'
+        required: true
+        default: 'Yes'
+        type: choice
+        options:
+          - Yes
+          - No
+      Region:
+        description: 'Select Region'
+        required: false
+        type: choice
+        options:
+          - INT
+          - PVS
+        default: 'INT'
+      Combine_File:
+        description: 'Combine Files?'
+        required: false
+        type: choice
+        options:
+          - Yes
+          - No
+        default: 'No'
+      Custom_Arguments:
+        description: 'Custom argument values (only if Use_Input_Params is No)'
+        required: false
+        default: 'INT Yes'
+        type: string
+
+jobs:
+  execute-common-workflow:
+    runs-on: windows-latest
+
+    steps:
+      - name: Construct Arguments
+        id: construct-arguments
+        run: |
+          if ("${{ inputs.Use_Input_Params }}" -eq "Yes") {
+              Write-Output "arguments=${{ inputs.Region }} ${{ inputs.Combine_File }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          } else {
+              Write-Output "arguments=${{ inputs.Custom_Arguments }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          }
+        shell: pwsh
+
+      - name: Execute Common Workflow
+        uses: capgemini-ga-demo/github_centralized_workflows/.github/workflows/c_python_run_wf.yml@develop
+        with:
+          Python_File: ${{ inputs.Python_File }}
+          Arguments: ${{ steps.construct-arguments.outputs.arguments }}
