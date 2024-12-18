@@ -39,9 +39,10 @@ on:
         type: string
 
 jobs:
-  execute-common-workflow:
+  construct-arguments:
     runs-on: windows-latest
-
+    outputs:
+      arguments: ${{ steps.construct-arguments.outputs.arguments }}
     steps:
       - name: Construct Arguments
         id: construct-arguments
@@ -53,8 +54,8 @@ jobs:
           }
         shell: pwsh
 
-      - name: Execute Common Workflow
-        uses: capgemini-ga-demo/github_centralized_workflows/.github/workflows/c_python_run_wf.yml@develop
-        with:
-          Python_File: ${{ inputs.Python_File }}
-          Arguments: ${{ steps.construct-arguments.outputs.arguments }}
+  execute-common-workflow:
+    uses: ./.github/workflows/common-python-workflow.yml
+    with:
+      Python_File: ${{ inputs.Python_File }}
+      Arguments: ${{ needs.construct-arguments.outputs.arguments }}
