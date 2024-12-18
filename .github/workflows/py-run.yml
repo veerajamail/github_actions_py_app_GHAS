@@ -48,13 +48,15 @@ jobs:
         id: construct-arguments
         run: |
           if ("${{ inputs.Use_Input_Params }}" -eq "Yes") {
-              Write-Output "arguments=${{ inputs.Region }} ${{ inputs.Combine_File }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+              $args = "${{ inputs.Region }} ${{ inputs.Combine_File }}"
           } else {
-              Write-Output "arguments=${{ inputs.Custom_Arguments }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+              $args = "${{ inputs.Custom_Arguments }}"
           }
+          Write-Output "arguments=$args" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
         shell: pwsh
 
   execute-common-workflow:
+    needs: construct-arguments
     uses: capgemini-ga-demo/github_centralized_workflows/.github/workflows/c_python_run_wf.yml@develop
     with:
       Python_File: ${{ inputs.Python_File }}
