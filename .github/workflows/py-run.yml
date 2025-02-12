@@ -47,6 +47,7 @@ jobs:
       - name: Construct Arguments
         id: construct-arguments
         run: |
+          echo "${{ steps.construct-arguments.outputs.arguments }}"
           if ("${{ inputs.Use_Input_Params }}" -eq "Yes") {
               $args = "${{ inputs.Region }} ${{ inputs.Combine_File }}"
           } else {
